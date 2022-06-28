@@ -67,4 +67,19 @@ and follow the steps carefully.
 You will need to change your VS Code setting:
   - uncheck Settings -> Extenstions -> Remote - SSH -> Use Local Server
 
+#### Use Jupyter Notebook
 
+Before run the container, type the following on the server:
+
+	export JUPYTER_PORT=<your_port_number>
+
+After your container is started, start your notebook server as follows:
+
+	jupyter notebook --port=<your_port_number> --ip=0.0.0.0
+
+Open another terminal from your machine and type the following to create a SSH tunnel between your machine and the notebook server inside the container:
+(Here we assume you have configured VS Code with teleport by following the previous step)
+
+	ssh dev-02.teleport.corp.neubla.com -L 8888:127.0.0.1:<your_port_number>
+ 
+Open your web browser, and go to http://127.0.0.1:8888. 

@@ -51,10 +51,8 @@ If you would like to add packages that can be used inside docker environment, do
 **Do Not remove or rebuild the existing image** because it may cause a
 disruption to other users, e.g., terminating containers being used by others.
 
-If you are experimenting or customizing the docker image of Neubla Development Environment, change
-
-`NEUBLA_DOCKER_IMAGE_VER` in `./environ/source.sh` or your environment and run
-`./environ/source.sh` again. The script will build a new image and start with
+If you are adding new packages, please change `NEUBLA_DOCKER_IMAGE_VER` in
+`./environ/source.sh` and run `./environ/source.sh` again. The script will build a new image and start with
 it. For example, you may set your own version (or tag) with:
 
     NEUBLA_DOCKER_IMAGE_VER=1.0.0-john.doe ./environ/source.sh $NB_HOME
@@ -62,45 +60,11 @@ it. For example, you may set your own version (or tag) with:
 Once you are done experimenting, please clean up such experimental images
 especially when you are on a shared development server.
 
-#### Use VS Code to connect to the Devbox server for testing with Docker containers
+#### Use VS Code to work with the Neubla's dev server
 
-You will need:
+Please see [Remote Development With Visual Studio Code](https://goteleport.com/docs/server-access/guides/vscode/)
+and follow the steps carefully. 
+You will need to change your VS Code setting:
+  - uncheck Settings -> Extenstions -> Remote - SSH -> Use Local Server
 
-* devbox host info added to ~/.ssh/config file locally. Something like
-```
-### servers
-Host devbox
-  HostName 192.168.0.64
-  User <user.name>
-  Port 5556
-```
-
-First, install VS Code and its **Remote Development** extension pack (which
-contains **Remote-WSL**, **Remote-SSH**, and **Remote-Containers** extensions).
-Once the extension pack is installed, you will see a green button to
-**Open a Remote Window** on the bottom left corner of the VS Code window. 
-
-Click the button (or press `Ctrl + Shift + p`) and select **Connect to Host...**
-from the drop-down menu, then click the SSH host from the `~/.ssh/config` file
-that you want to connect to.
-
-A new VS Code window will be prompted with **Enter password for ...**. Enter the
-password to access the SSH host.
-
-Open the Explorer tab to find the file directory of the host. Once the working
-directory has been selected, you will find the terminal for the host within the
-VS Code window.
-
-Follow the steps from the above Develop section to start a Docker container in
-the SSH host using VS Code.
-
-Click the button (or press `Ctrl + Shift + p`) and select
-**Remote-Containers: Attach to Running Container** from the drop-down menu. The
-selection shows the list of running docker containers on the host. Select a
-docker container that you are testing with.
-
-#### Model Repo
-
-We manage machine learning models in this repo using [DVC](https://dvc.org/)
-Please see [Models](./models/README.md) for details.
 

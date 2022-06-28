@@ -1,0 +1,80 @@
+FROM ubuntu:20.04
+ARG DEBIAN_FRONTEND=noninteractive
+
+# We assume this Dockerfile is used in Korea. If you are located in areas
+# other than Korea, please remove the following 3 lines:
+RUN sed -i 's/archive.ubuntu.com/mirror.kakao.com/g' /etc/apt/sources.list
+RUN sed -i 's/security.ubuntu.com/mirror.kakao.com/g' /etc/apt/sources.list
+RUN sed -i 's/extras.ubuntu.com/mirror.kakao.com/g' /etc/apt/sources.list
+
+# Install Ubuntu packages
+COPY ./environ/packages.txt /
+RUN apt update && \
+    apt install --no-install-recommends -y $(cat /packages.txt) && \
+    apt clean && rm -rf /var/lib/apt/lists/* 2 > /dev/null && rm -f /packages.txt
+
+RUN apt update && apt install python3.8-venv gcc-7 g++-7 -y --no-install-recommends
+
+# Install cmake the latest version (3.23.1)
+ARG CMAKE_VER="3.23.1"
+RUN cd /usr/local && \
+    wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VER}/cmake-${CMAKE_VER}-linux-aarch64.tar.gz && \
+    tar -zxvf cmake-${CMAKE_VER}-linux-aarch64.tar.gz; rm -rf cmake-${CMAKE_VER}-linux-aarch64.tar.gz && \
+    mv cmake-${CMAKE_VER}-linux-aarch64 cmake
+
+# Install Python packages
+COPY ./environ/requirements.txt /requirements.txt
+RUN pip3 install -r /requirements.txt && rm -f /requirements.txt
+
+RUN apt install wget unzip -y --no-install-recommends
+RUN wget https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-linux.zip && unzip -o ninja-linux.zip -d /usr/local/bin && \
+    update-alternatives --install /usr/bin/ninja ninja /usr/local/bin/ninja 1 --force && rm -rf ninja-linux.zip
+
+# Install Eigen
+ARG EIGEN_VER="3.4.0"
+RUN cd /usr/local && \
+    wget https://gitlab.com/libeigen/eigen/-/archive/${EIGEN_VER}/eigen-${EIGEN_VER}.tar.gz && \
+    tar -xvzf eigen-${EIGEN_VER}.tar.gz; rm -rf eigen-${EIGEN_VER}.tar.gz
+
+# Install systemC
+ARG SYSTEMC_VER="2.3.3"
+RUN cd /usr/local && \
+    wget https://accellera.org/images/downloads/standards/systemc/systemc-${SYSTEMC_VER}.tar.gz && \
+    tar -xvzf systemc-2.3.3.tar.gz; rm -rf systemc-${SYSTEMC_VER}.tar.gz && \
+    cd systemc-${SYSTEMC_VER} && \
+    mkdir objdir; cd objdir; ../configure --enable-debug CXXFLAGS='-DSC_CPLUSPLUS=201703L -std=c++17'; make ; make install ; cp -r ../lib-* ../lib
+
+# Install YAML
+ARG YAML_VER="1.24"
+RUN wget -O YAML-${YAML_VER}.tar.gz http://search.cpan.org/CPAN/authors/id/T/TI/TINITA/YAML-${YAML_VER}.tar.gz && \
+    tar -xzvf YAML-${YAML_VER}.tar.gz; rm -rf YAML-${YAML_VER}.tar.gz && \
+    cd YAML-${YAML_VER} && \
+    perl Makefile.PL; make; make install
+
+# Install IOTee
+ARG IOTee_VER="0.65"
+RUN wget -O IO-Tee-${IOTee_VER}.tar.gz http://search.cpan.org/CPAN/authors/id/N/NE/NEILB/IO-Tee-${IOTee_VER}.tar.gz && \
+    tar -xzvf IO-Tee-${IOTee_VER}.tar.gz; rm -rf IO-Tee-${IOTee_VER}.tar.gz && \
+    cd IO-Tee-${IOTee_VER} && \
+    perl Makefile.PL; make; make install
+
+# Install PyTorch
+RUN pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
+
+# Install DeepCABAC
+COPY ./src/ml/onnx/compression/encoding/DeepCABAC/ /DeepCABAC
+RUN pip3 install /DeepCABAC/.
+RUN rm -rf /DeepCABAC
+
+# Install onnxruntime (c++api)
+ARG ORT_VER="1.11.0"
+RUN cd /usr/local && \
+    wget https://github.com/microsoft/onnxruntime/releases/download/v${ORT_VER}/onnxruntime-linux-aarch64-${ORT_VER}.tgz && \
+    tar -zxvf onnxruntime-linux-aarch64-${ORT_VER}.tgz; rm -rf onnxruntime-linux-aarch64-${ORT_VER}.tgz && \
+    mv onnxruntime-linux-aarch64-${ORT_VER} onnxruntime
+
+WORKDIR /workspace/dev
+
+COPY ./environ/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]

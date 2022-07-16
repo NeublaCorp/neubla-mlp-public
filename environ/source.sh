@@ -24,7 +24,7 @@
 # 3. PATCH version when you make backwards compatible bug/style fixes
 #
 
-NEUBLA_DOCKER_IMAGE_VER=${NEUBLA_DOCKER_IMAGE_VER:-1.1.0-public}
+NEUBLA_DOCKER_IMAGE_VER=${NEUBLA_DOCKER_IMAGE_VER:-1.1.1-public}
 GCLOUD_VER=${NEUBLA_GCLOUD_VER:-380.0.0}
 FLAG_QUIET="--quiet"
 

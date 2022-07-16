@@ -1,26 +1,26 @@
-Development Environment {#devenv}
+Development Environment
 =======================
 
-Neubla Development Environment is based on docker container and github. Once
-you clone the repository, you can use it as follows:
+Neubla Development Environment is based on Docker container and a Git
+repository.  Once you clone the repository, you can use it as follows:
 
     cd <neubla_mlp_downloaded_path>
     export NB_HOME=$PWD
     ./environ/source.sh $NB_HOME
 
-If you have the following message, please install Docker.
+If you encounter the following message, you need to install Docker.
 
     docker: Cannot connect to the Docker daemon at unix:///var/run/docker.sock.
     Is the docker daemon running?
 
-Whether you are on Linux or Mac, please install docker by referring to the
+Whether you are on Linux or macOS, please install docker by referring to the
 followings:
 
 - https://docs.docker.com/desktop/mac/install/
 - https://docs.docker.com/desktop/linux/install/ubuntu/
 
-Neubla Development Environment currently works on Linux and Mac. It actually
-starts a docker conainter tailored to the development in Neubla. The followings
+Neubla Development Environment currently works on Linux and macOS. It actually
+starts a Docker conainter tailored to the development in Neubla. The followings
 are the functions that Neubla Development Environment provides:
 
 - compiler
@@ -41,7 +41,7 @@ you re-start Neubla Development Environment.
 
 For exiting Neubla Development Environment, just do 'exit'.
 
-### Customization of Neubal Development Environment
+## Customization of Neubla Development Environment
 
 If you would like to add packages that can be used inside docker environment, do the following:
 
@@ -52,22 +52,63 @@ If you would like to add packages that can be used inside docker environment, do
 disruption to other users, e.g., terminating containers being used by others.
 
 If you are adding new packages, please change `NEUBLA_DOCKER_IMAGE_VER` in
-`./environ/source.sh` and run `./environ/source.sh` again. The script will build a new image and start with
-it. For example, you may set your own version (or tag) with:
+`./environ/source.sh` and run `./environ/source.sh` again. The script will
+build a new image and start with it. For example, you may set your own version
+(or tag) with:
 
-    NEUBLA_DOCKER_IMAGE_VER=1.0.0-john.doe ./environ/source.sh $NB_HOME
+    NEUBLA_DOCKER_IMAGE_VER=1.1.1-john.doe ./environ/source.sh $NB_HOME
 
 Once you are done experimenting, please clean up such experimental images
 especially when you are on a shared development server.
 
-#### Use VS Code to work with the Neubla's dev server
+## Use VS Code to work with the Neubla's dev server
 
-Please see [Remote Development With Visual Studio Code](https://goteleport.com/docs/server-access/guides/vscode/)
-and follow the steps carefully. 
-You will need to change your VS Code setting:
-  - uncheck Settings -> Extenstions -> Remote - SSH -> Use Local Server
+### Prerequisite
 
-#### Use Jupyter Notebook
+* OpenSSH client (most Linux-based systems have this)
+* VS Code with the [Remote - SSH extension](https://code.visualstudio.com/docs/remote/ssh#_system-requirements)
+
+### Step 1/3. First-time setup
+
+You need to configure your local SSH client to access Teleport Nodes.
+
+Login to your Teleport proxy by:
+
+```
+tsh login --proxy teleport.corp.neubla.com --user <user_name>
+```
+
+Then, you can generate the OpenSSH config for the proxy:
+
+```
+tsh config --proxy teleport.corp.neubla.com
+```
+
+Append the resulting configuration snippet into your SSH config file located in
+`$HOME/.ssh/config` (in Linux or macOS) or `%UserProfile%\.ssh\config` (in MS Windows)
+
+### Step 2/3. Configure VS Code
+
+Install the Remote - SSH extension if you haven't yet. 
+
+In VS Code, use **Remote-SSH: Connect to Host...** to connect to `dev-02`. Its hostname should be
+`dev-02.teleport.corp.neubla.com`. 
+
+Note: If you encounter an error while connecting to the server, you may need to change your VS Code setting:
+  - Uncheck "Settings -> Extenstions -> Remote - SSH -> Use Local Server"
+
+### Step 3/3. Use!
+
+* Once connected, in Menu, click **Terminal** -> **New Terminal**. 
+* In the terminal, change your current directory to where `neubla-mlp-public` is cloned. 
+  (e.g., `cd git/neubla-mlp-public`)
+* Start the container: `./environ/source.sh $PWD`
+
+Please see
+[Remote Development With Visual Studio Code](https://goteleport.com/docs/server-access/guides/vscode/)
+for more information, especially you are working on Microsoft Windows.
+
+## Use Jupyter Notebook
 
 Before run the container, type the following on the server:
 
@@ -77,8 +118,9 @@ After your container is started, start your notebook server as follows:
 
 	jupyter notebook --port=<your_port_number> --ip=0.0.0.0
 
-Open another terminal from your machine and type the following to create a SSH tunnel between your machine and the notebook server inside the container:
-(Here we assume you have configured VS Code with teleport by following the previous step)
+Open another terminal from your machine and type the following to create a SSH
+tunnel between your machine and the notebook server inside the container:
+(Here, we assume you have configured VS Code with teleport by following the previous step)
 
 	ssh dev-02.teleport.corp.neubla.com -L 8888:127.0.0.1:<your_port_number>
  

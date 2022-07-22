@@ -19,7 +19,7 @@ Teleport는 기존 SSH 에 비해 더 나은 보안성과, Web UI를 통한
 If you want to access the servers via terminal or VS Code:
 
 * [Teleport CLI](https://goteleport.com/docs/installation/)
-  - **Note** You must install Teleport client (`tsh`) 9.3.x. The most recent 10.0.2 is buggy.  
+  - **Note** You must install Teleport client (`tsh`) 9.3.x. The most recent version, 10.0.2, has a bug that prevents you from loggin into our server.
 * OpenSSH client
   - For Windows, please see [Install OpenSSH using Windows Settings](https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse#install-openssh-using-windows-settings)
   - **Note: You ONLY need OpenSSH Client. You DO NOT need OpenSSH Server to use Teleport.**

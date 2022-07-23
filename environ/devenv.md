@@ -65,14 +65,14 @@ especially when you are on a shared development server.
 
 ### Prerequisite
 
-* OpenSSH client (most Linux-based systems have this)
+* OpenSSH Client (most Linux-based systems have this)
 * VS Code with the [Remote - SSH extension](https://code.visualstudio.com/docs/remote/ssh#_system-requirements)
 
 ### Step 1/3. First-time setup
 
-You need to configure your local SSH client to access Teleport Nodes.
+You need to configure your local SSH client to access the server via Teleport Proxy.
 
-Login to your Teleport proxy by:
+On your local computer, login to your Teleport proxy by:
 
 ```
 tsh login --proxy teleport.corp.neubla.com --user <user_name>
@@ -85,7 +85,7 @@ tsh config --proxy teleport.corp.neubla.com
 ```
 
 Append the resulting configuration snippet into your SSH config file located in
-`$HOME/.ssh/config` (in Linux or macOS) or `%UserProfile%\.ssh\config` (in MS Windows)
+`$HOME/.ssh/config` (in Linux or macOS) or `%UserProfile%\.ssh\config` (in Windows)
 
 ### Step 2/3. Configure VS Code
 
@@ -125,3 +125,4 @@ tunnel between your machine and the notebook server inside the container:
 	ssh dev-02.teleport.corp.neubla.com -L 8888:127.0.0.1:<your_port_number>
  
 Open your web browser, and go to http://127.0.0.1:8888. 
+
